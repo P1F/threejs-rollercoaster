@@ -53,14 +53,12 @@
       scene.add(light);
 
       var spotLight = new THREE.SpotLight(0xaaaaaa);
-      spotLight.position.set(-90, 100, -300);
-      spotLight.rotation.z = 0.3;
+      spotLight.position.set(-20, 40, -30);
 
       spotLight.castShadow = true;
       spotLight.shadow.bias = 0.0001;
-      spotLight.shadow.darkness = 0.2;
-      spotLight.shadow.mapWidth = 2048; // Shadow Quality
-      spotLight.shadow.mapHeight = 2048; // Shadow Quality
+      spotLight.shadow.darkness = 1;
+
       scene.add(spotLight);
 
       geometry = new THREE.SphereGeometry(20, 32, 16);
@@ -71,8 +69,8 @@
         envMap: scene.environment,
       });
       const lightSphere = new THREE.Mesh(geometry, material);
-      spotLight.add(lightSphere);
-      
+      //spotLight.add(lightSphere);
+
       const train = new THREE.Object3D();
       scene.add(train);
 
@@ -370,7 +368,8 @@
         roughness: 0.5, // between 0 and 1
       });
       rollerCoaster.geometry = new THREE.Mesh(geometry, material);
-
+      rollerCoaster.geometry.castShadow = true;
+      rollerCoaster.geometry.receiveShadow = true;
       scene.add(rollerCoaster.geometry);
 
       geometry = new RollerCoasterLiftersGeometry(curve, 100);
