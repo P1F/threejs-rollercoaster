@@ -143,19 +143,25 @@
 			// }
 		
 			geometry = new THREE.SphereGeometry( 0.5, 32, 16 );
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 			
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 			const p1 = new THREE.Mesh( geometry, material );
 			p1.position.set(20, 20, -30);
 			p1.userData.draggable = true;
+
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 			const p2 = new THREE.Mesh( geometry, material );
 			p2.position.set(-10, 20, 40);
 			p2.userData.draggable = true;
 			p2.color = 0x9d10bd;
+
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 			const p3 = new THREE.Mesh( geometry, material );
 			p3.position.set(-50, 20, 20);
 			p3.userData.draggable = true;
 			p3.color = 0x36ea4c;
+
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
 			const p4 = new THREE.Mesh( geometry, material );
 			p4.position.set(0, 20, 20);
 			p4.userData.draggable = true;
@@ -272,7 +278,7 @@
 					bezierCurve = updateCurve();
 					points = bezierCurve.getPoints(1000000);
 					updateRollerCoaster();		
-					draggable.material.color.setHex(0xffff00);
+					draggable.material.color.setHex(0xffffff);
 					console.log(`dropping draggable ${draggable.uuid}`);
 					draggable = null;
 					return;
@@ -308,6 +314,9 @@
 							console.log('e.point :>> ', e.point);
 							draggable.position.x = e.point.x;
 							draggable.position.z = e.point.z;
+							bezierCurve = updateCurve();
+							points = bezierCurve.getPoints(500);
+							updateRollerCoaster();
 						}
 					}
 				}
