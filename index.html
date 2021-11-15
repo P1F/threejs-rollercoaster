@@ -8,7 +8,7 @@
 	<body>
 		<script type="module">
 
-      import * as THREE from './three.module.js';
+      import * as THREE from './build/three.module.js';
 
 			import {
 				RollerCoasterGeometry,
@@ -18,7 +18,9 @@
 				SkyGeometry
 			} from './script.js';
 
-			import { OrbitControls } from './OrbitControls.js'
+			import { OrbitControls } from './js/OrbitControls.js'
+			import { EditorControls } from './js/EditorControls.js'
+			import { TransformControls } from './js/TransformControls.js'
 
 			let mesh, material, geometry;
 
