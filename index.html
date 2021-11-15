@@ -53,7 +53,7 @@
       scene.add(light);
 
       var spotLight = new THREE.SpotLight(0xaaaaaa);
-      spotLight.position.set(-100, 100, 100);
+      spotLight.position.set(-90, 100, -300);
       spotLight.rotation.z = 0.3;
 
       spotLight.castShadow = true;
@@ -63,6 +63,16 @@
       spotLight.shadow.mapHeight = 2048; // Shadow Quality
       scene.add(spotLight);
 
+      geometry = new THREE.SphereGeometry(20, 32, 16);
+      material = new THREE.MeshStandardMaterial({
+        color: "#000000",
+        metalness: 1, // between 0 and 1
+        roughness: 0.5, // between 0 and 1
+        envMap: scene.environment,
+      });
+      const lightSphere = new THREE.Mesh(geometry, material);
+      spotLight.add(lightSphere);
+      
       const train = new THREE.Object3D();
       scene.add(train);
 
