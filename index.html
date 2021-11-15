@@ -42,23 +42,19 @@
 			material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 			
 			const sphere = new THREE.Mesh( geometry, material );
-			scene.add( sphere );
 			train.add( sphere );
 
-			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 500 );
-			const iniPos = {
-				x: 2.89,
-				y: 162.12,
-				z: 25.570,
-			}
-			const iniLook = {
-				x: 5,
-				y: -1,
-				z: -8,
-			}
+			geometry = new THREE.BoxBufferGeometry( 0.5, 300, 300 );
+			material = new THREE.MeshBasicMaterial( { color: 0x00f6ff, alphaTest: 0, visible: false } );
+			const plane = new THREE.Mesh( geometry, material );
+			plane.position.set(0, 20, 0);
+			plane.rotateZ( - Math.PI / 2 );
+			plane.userData.ground = true;
+			scene.add(plane);
 
-			camera.position.set(iniPos.x, iniPos.y, iniPos.z);
-			camera.lookAt(iniLook.x, iniLook.y, iniLook.z);
+			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 500 );
+			camera.position.set(0, 130, 0);
+			
 			//train.add( camera );
 
 			const controls = new OrbitControls(camera, renderer.domElement);
@@ -149,14 +145,18 @@
 			
 			const p1 = new THREE.Mesh( geometry, material );
 			p1.position.set(20, 20, -30);
+			p1.userData.draggable = true;
 			const p2 = new THREE.Mesh( geometry, material );
 			p2.position.set(-10, 20, 40);
+			p2.userData.draggable = true;
 			p2.color = 0x9d10bd;
 			const p3 = new THREE.Mesh( geometry, material );
 			p3.position.set(-50, 20, 20);
+			p3.userData.draggable = true;
 			p3.color = 0x36ea4c;
 			const p4 = new THREE.Mesh( geometry, material );
 			p4.position.set(0, 20, 20);
+			p4.userData.draggable = true;
 			scene.add( p1 );
 			scene.add( p2 );
 			scene.add( p3 );
@@ -257,7 +257,55 @@
 
 			funfairs.push( mesh );
 
-			//
+			// ----------------------- DRAG'N DROP -----------------------
+
+			const raycaster = new THREE.Raycaster();
+			const clickMouse = new THREE.Vector2();
+			const moveMouse = new THREE.Vector2();
+			let draggable;
+
+			window.addEventListener( 'click', event => {
+				if (draggable) {
+					draggable.material.color.setHex(0xffff00);
+					console.log(`dropping draggable ${draggable.uuid}`);
+					draggable = null;
+					return;
+				}
+				// calculate mouse position in normalized device coordinates
+				// (-1 to +1) for both components
+				clickMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				clickMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				
+				// update the picking ray with the camera and mouse position
+				raycaster.setFromCamera( clickMouse, camera );
+				const intersects = raycaster.intersectObjects( scene.children );
+				if (intersects.length > 0 && intersects[0].object.userData.draggable) {
+					draggable = intersects[0].object;
+					draggable.material.color.setHex(0x9988dd);
+					console.log(`found draggable ${draggable.uuid}`);
+				}
+
+			});
+
+			window.addEventListener( 'mousemove', event => {
+				moveMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				moveMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+			})
+
+			function dragObject() {
+				if (draggable) {
+					raycaster.setFromCamera( moveMouse, camera );
+					const intersects = raycaster.intersectObjects( scene.children );
+					if (intersects.length > 0) {
+						for (let e of intersects) {
+							if (!e.object.userData.ground) continue;
+							console.log('e.point :>> ', e.point);
+							draggable.position.x = e.point.x;
+							draggable.position.z = e.point.z;
+						}
+					}
+				}
+			}
 
 			window.addEventListener( 'resize', onWindowResize );
 
@@ -270,7 +318,7 @@
 
 			}
 
-			//
+			// -----------------------------------------------------------
 
 			const position = new THREE.Vector3();
 			const tangent = new THREE.Vector3();
@@ -291,6 +339,7 @@
         //     timerId = -1;
         //   }, 1*1000);
         // }
+				dragObject();
 				const time = performance.now();
 				const delta = time - prevTime;
 				
