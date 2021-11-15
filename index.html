@@ -81,9 +81,8 @@
         0.1,
         500
       );
-      camera.position.set(0, 130, 0);
 
-      // train.add( camera );
+      train.add(camera);
 
       const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -382,13 +381,21 @@
       window.addEventListener("keypress", function () {
         if (event.key == 1) {
           camera.position.set(0, 0, 0);
-          camera.lookAt(0, 0, -5);
+          camera.rotation.x = 0;
+          camera.rotation.z = 0;
+          camera.rotation.y = 0;
           train.add(camera);
         } else if (event.key == 2) {
-          camera.position.set(0, 10, -2);
+          camera.position.set(0, 5, 10);
+          camera.rotation.x = -0.4;
+          camera.rotation.z = 0;
+          camera.rotation.y = 0;
           train.add(camera);
         } else if (event.key == 3) {
-          camera.position.set(0, 130, 0);
+          camera.position.set(0, 70, 50);
+          camera.rotation.x = -0.8;
+          camera.rotation.z = 0;
+          camera.rotation.y = 0;
           train.remove(camera);
         }
       });
