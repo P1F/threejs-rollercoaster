@@ -176,9 +176,8 @@
 			}
 
 
-			const bezierCurve = updateCurve();
-
-			const points = bezierCurve.getPoints(1000000);
+			let bezierCurve = updateCurve();
+			let points = bezierCurve.getPoints(1000000);
 
 			const curve = ( function () {
 
@@ -213,26 +212,28 @@
 
 			} )();
 
+			const rollerCoaster = {};
+
 			geometry = new RollerCoasterGeometry( curve, 1500 );
 			material = new THREE.MeshPhongMaterial( {
 				vertexColors: true
 			} );
-			mesh = new THREE.Mesh( geometry, material );
-			scene.add( mesh );
+			rollerCoaster.geometry = new THREE.Mesh( geometry, material );
+			scene.add( rollerCoaster.geometry );
 
 			geometry = new RollerCoasterLiftersGeometry( curve, 100 );
 			material = new THREE.MeshPhongMaterial();
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.position.y = 0.1;
-			scene.add( mesh );
+			rollerCoaster.lifters = new THREE.Mesh( geometry, material );
+			rollerCoaster.lifters.position.y = 0.1;
+			scene.add( rollerCoaster.lifters );
 
 			geometry = new RollerCoasterShadowGeometry( curve, 500 );
 			material = new THREE.MeshBasicMaterial( {
 				color: 0x305000, depthWrite: false, transparent: true
 			} );
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.position.y = 0.1;
-			scene.add( mesh );
+			rollerCoaster.shadow = new THREE.Mesh( geometry, material );
+			rollerCoaster.shadow.position.y = 0.1;
+			scene.add( rollerCoaster.shadow );
 
 			const funfairs = [];
 
@@ -268,6 +269,9 @@
 
 			window.addEventListener( 'click', event => {
 				if (draggable) {
+					bezierCurve = updateCurve();
+					points = bezierCurve.getPoints(1000000);
+					updateRollerCoaster();		
 					draggable.material.color.setHex(0xffff00);
 					console.log(`dropping draggable ${draggable.uuid}`);
 					draggable = null;
@@ -308,6 +312,17 @@
 					}
 				}
 			}
+
+			const updateRollerCoaster = () => {
+				geometry = new RollerCoasterGeometry( curve, 1500 );
+				rollerCoaster.geometry.geometry = geometry;
+
+				geometry = new RollerCoasterLiftersGeometry( curve, 100 );
+				rollerCoaster.lifters.geometry = geometry;
+
+				geometry = new RollerCoasterShadowGeometry( curve, 500 );
+				rollerCoaster.shadow.geometry = geometry;
+			};
 
 			window.addEventListener( 'resize', onWindowResize );
 
