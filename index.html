@@ -9,6 +9,9 @@
     />
   </head>
   <body>
+		<audio autoplay>
+			<source src="./media/rollerCoasterOfLove.mp3" type="audio/mpeg">
+		</audio>
     <script type="module">
       import * as THREE from "./build/three.module.js";
       import { Water } from "https://threejs.org/examples/jsm/objects/Water.js";
@@ -25,9 +28,6 @@
       import { OrbitControls } from "./js/OrbitControls.js";
       import { EditorControls } from "./js/EditorControls.js";
       import { TransformControls } from "./js/TransformControls.js";
-
-			const audio = new Audio('./media/rollerCoasterOfLove.mp3');
-			audio.play();
 
       let mesh, material, geometry;
 
