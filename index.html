@@ -31,6 +31,9 @@
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true; //Shadow
+      renderer.shadowMap.soft = true; // Shadow
+      renderer.shadowMap.type = THREE.PCFShadowMap; //Shadow
       document.body.appendChild(renderer.domElement);
       //
 
@@ -40,6 +43,17 @@
       const light = new THREE.HemisphereLight(0xfff0f0, 0x606066);
       light.position.set(1, 1, 1);
       scene.add(light);
+
+      var spotLight = new THREE.SpotLight(0xaaaaaa);
+      spotLight.position.set(-20, 8, 8);
+      spotLight.rotation.z = 0.6;
+
+      spotLight.castShadow = true;
+      spotLight.shadow.bias = 0.0001;
+      spotLight.shadow.darkness = 0.2;
+      spotLight.shadow.mapWidth = 2048; // Shadow Quality
+      spotLight.shadow.mapHeight = 2048; // Shadow Quality
+      scene.add(spotLight);
 
       const train = new THREE.Object3D();
       scene.add(train);
@@ -207,6 +221,21 @@
       let bezierCurve = updateCurve();
       let points = bezierCurve.getPoints(1000000);
 
+      // Define Geometry
+      var geometry2 = new THREE.BoxGeometry(1, 1, 1);
+      var material2 = new THREE.MeshPhongMaterial({
+        // Required For Shadows
+        color: 0xecebec,
+        specular: 0x000000,
+        shininess: 100,
+      });
+      //Cube
+      var cube = new THREE.Mesh(geometry2, material2);
+      cube.position.set(15, 0, -30);
+      cube.castShadow = true;
+      cube.receiveShadow = false;
+      scene.add(cube);
+
       function buildSky() {
         const sky = new Sky();
         sky.scale.setScalar(10000);
@@ -251,6 +280,7 @@
           fog: scene.fog !== undefined,
         });
         water.rotation.x = -Math.PI / 2;
+        water.receiveShadow = true;
         scene.add(water);
 
         const waterUniforms = water.material.uniforms;
@@ -294,6 +324,7 @@
         roughness: 0.5, // between 0 and 1
       });
       rollerCoaster.geometry = new THREE.Mesh(geometry, material);
+
       scene.add(rollerCoaster.geometry);
 
       geometry = new RollerCoasterLiftersGeometry(curve, 100);
@@ -304,6 +335,8 @@
       });
       rollerCoaster.lifters = new THREE.Mesh(geometry, material);
       rollerCoaster.lifters.position.y = 0.1;
+      rollerCoaster.lifters.castShadow = true;
+      rollerCoaster.lifters.receiveShadow = true;
       scene.add(rollerCoaster.lifters);
 
       geometry = new RollerCoasterShadowGeometry(curve, 500);
@@ -312,9 +345,6 @@
         depthWrite: false,
         transparent: true,
       });
-      rollerCoaster.shadow = new THREE.Mesh(geometry, material);
-      rollerCoaster.shadow.position.y = 0.1;
-      // scene.add(rollerCoaster.shadow);
 
       const funfairs = [];
 
@@ -327,7 +357,6 @@
       mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(-80, 10, -70);
       mesh.rotation.x = Math.PI / 2;
-      scene.add(mesh);
 
       funfairs.push(mesh);
 
@@ -337,7 +366,6 @@
       });
       mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(50, 2, 30);
-      scene.add(mesh);
 
       funfairs.push(mesh);
 
