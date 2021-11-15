@@ -18,6 +18,8 @@
 				SkyGeometry
 			} from './script.js';
 
+			import { OrbitControls } from './OrbitControls.js'
+
 			let mesh, material, geometry;
 
 			const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -36,8 +38,30 @@
 			const train = new THREE.Object3D();
 			scene.add( train );
 
+			geometry = new THREE.SphereGeometry( 0.5, 32, 16 );
+			material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+			
+			const sphere = new THREE.Mesh( geometry, material );
+			scene.add( sphere );
+			train.add( sphere );
+
 			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 500 );
-			train.add( camera );
+			const iniPos = {
+				x: 2.89,
+				y: 162.12,
+				z: 25.570,
+			}
+			const iniLook = {
+				x: 5,
+				y: -1,
+				z: -8,
+			}
+
+			camera.position.set(iniPos.x, iniPos.y, iniPos.z);
+			camera.lookAt(iniLook.x, iniLook.y, iniLook.z);
+			//train.add( camera );
+
+			const controls = new OrbitControls(camera, renderer.domElement);
 
 			// environment
 
@@ -86,6 +110,74 @@
 
 			const PI2 = Math.PI * 2;
 
+			function randomInt(min, max) { // min and max included 
+ 				return Math.floor(Math.random() * (max - min + 1) + min)
+			}
+
+			// let ini = new THREE.Vector3( 0, 0, 0 );
+			// let end = new THREE.Vector3( 10, 0, 0 );
+			// let points = [];
+			// for ( let i = 1; i <= 10; i ++ ) {
+			// 	const randOffset = {
+			// 		x: randomInt(-20, +20), 
+			// 		y: randomInt(-20,20),
+			// 		z: randomInt(-20,20),
+			// 	};
+
+			// 	const bezierCurve = new THREE.CubicBezierCurve3(
+			// 		ini,
+			// 		new THREE.Vector3( ini.x + randOffset.x, ini.y + randOffset.y, ini.z + randOffset.z ),
+			// 		new THREE.Vector3( end.x + randOffset.x, end.y + randOffset.y, end.z + randOffset.z ),
+			// 		end
+			// 	);
+
+			// 	const newPoints = bezierCurve.getPoints( 10000 );
+			// 	points = points.concat(newPoints);
+
+			// 	const newEnd = {
+			// 		x: end.x + randomInt(-50, +50), 
+			// 		y: end.y + randomInt(-50,50),
+			// 		z: end.z + randomInt(-50,50),
+			// 	};
+
+			// 	ini = end;
+			// 	end = new THREE.Vector3( newEnd.x, newEnd.y, newEnd.z );
+			// }
+		
+			geometry = new THREE.SphereGeometry( 0.5, 32, 16 );
+			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
+			
+			const p1 = new THREE.Mesh( geometry, material );
+			p1.position.set(20, 20, -30);
+			const p2 = new THREE.Mesh( geometry, material );
+			p2.position.set(-10, 20, 40);
+			p2.color = 0x9d10bd;
+			const p3 = new THREE.Mesh( geometry, material );
+			p3.position.set(-50, 20, 20);
+			p3.color = 0x36ea4c;
+			const p4 = new THREE.Mesh( geometry, material );
+			p4.position.set(0, 20, 20);
+			scene.add( p1 );
+			scene.add( p2 );
+			scene.add( p3 );
+			scene.add( p4 );
+
+			const updateCurve = () => {
+				const curve = new THREE.CubicBezierCurve3(
+					new THREE.Vector3( p1.position.x, p1.position.y, p1.position.z),
+					new THREE.Vector3( p2.position.x, p2.position.y, p2.position.z ),
+					new THREE.Vector3( p3.position.x, p3.position.y, p3.position.z ),
+					new THREE.Vector3( p4.position.x, p4.position.y, p4.position.z )
+				);
+
+				return curve;
+			}
+
+
+			const bezierCurve = updateCurve();
+
+			const points = bezierCurve.getPoints(1000000);
+
 			const curve = ( function () {
 
 				const vector = new THREE.Vector3();
@@ -94,14 +186,13 @@
 				return {
 
 					getPointAt: function ( t ) {
+						let i = t === 0 ? 0 : Math.floor(t * points.length) - 1;
+						i = i === -1 ? 0 : i;
+						const x = points[i].x
+						const y = points[i].y;
+						const z = points[i].z;
 
-						t = t * PI2;
-
-						const x = Math.sin( t * 3 ) * Math.cos( t * 4 ) * 50;
-						const y = Math.sin( t * 10 ) * 2 + Math.cos( t * 17 ) * 2 + 5;
-						const z = Math.sin( t ) * Math.sin( t * 4 ) * 50;
-
-						return vector.set( x, y, z ).multiplyScalar( 2 );
+						return vector.set( x, y, z ).multiplyScalar( 1 );
 
 					},
 
@@ -191,10 +282,21 @@
 
 			let prevTime = performance.now();
 
+			let timerId = -1;
 			function render() {
+				// if (timerId === -1) {
+        //   timerId = setInterval(() => {
+        //     // repeat something
+        //     clearInterval(timerId);
+        //     timerId = -1;
+        //   }, 1*1000);
+        // }
 				const time = performance.now();
 				const delta = time - prevTime;
-
+				
+				// const cameraDirection = new THREE.Vector3();
+				// camera.getWorldDirection(cameraDirection);
+				
 				for ( let i = 0; i < funfairs.length; i ++ ) {
 
 					funfairs[ i ].rotation.y = time * 0.0004;
