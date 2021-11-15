@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>three.js vr - roller coaster</title>
+    <title>Rollercoaster of Love</title>
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -9,6 +9,8 @@
     />
     <style>
       body {
+        margin: 0;
+        padding: 0;
         overflow: hidden;
       }
     </style>
@@ -26,8 +28,6 @@
         RollerCoasterGeometry,
         RollerCoasterShadowGeometry,
         RollerCoasterLiftersGeometry,
-        TreesGeometry,
-        SkyGeometry,
       } from "./script.js";
 
       import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
@@ -138,28 +138,6 @@
 
         vertex.toArray(positions, i);
       }
-
-      geometry.computeVertexNormals();
-
-      material = new THREE.MeshLambertMaterial({
-        color: "#78b2c4",
-      });
-
-      mesh = new THREE.Mesh(geometry, material);
-
-      geometry = new TreesGeometry(mesh);
-      material = new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        vertexColors: true,
-      });
-      mesh = new THREE.Mesh(geometry, material);
-
-      geometry = new SkyGeometry();
-      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      mesh = new THREE.Mesh(geometry, material);
-      // scene.add(mesh);
-
-      //
 
       const PI2 = Math.PI * 2;
 
