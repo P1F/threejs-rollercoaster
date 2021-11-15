@@ -53,7 +53,12 @@
       scene.add(water);
 
       geometry = new THREE.SphereGeometry(0.5, 32, 16);
-      material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+      material = new THREE.MeshStandardMaterial({
+        color: "#cfad89",
+        metalness: 1, // between 0 and 1
+        roughness: 0.5, // between 0 and 1
+        envMap: scene.environment,
+      });
 
       const sphere = new THREE.Mesh(geometry, material);
       train.add(sphere);
@@ -165,7 +170,7 @@
 
       material = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const p1 = new THREE.Mesh(geometry, material);
-      p1.position.set(20, 20, -30);
+      p1.position.set(20, 35, -30);
       p1.userData.draggable = true;
 
       material = new THREE.MeshBasicMaterial({ color: 0xffffff });
@@ -182,7 +187,7 @@
 
       material = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const p4 = new THREE.Mesh(geometry, material);
-      p4.position.set(0, 20, 20);
+      p4.position.set(0, 10, 20);
       p4.userData.draggable = true;
       scene.add(p1);
       scene.add(p2);
@@ -284,27 +289,33 @@
       const rollerCoaster = {};
 
       geometry = new RollerCoasterGeometry(curve, 1500);
-      material = new THREE.MeshPhongMaterial({
-        vertexColors: true,
+      material = new THREE.MeshStandardMaterial({
+        envMap: scene.environment,
+        metalness: 1, // between 0 and 1
+        roughness: 0.5, // between 0 and 1
       });
       rollerCoaster.geometry = new THREE.Mesh(geometry, material);
       scene.add(rollerCoaster.geometry);
 
       geometry = new RollerCoasterLiftersGeometry(curve, 100);
-      material = new THREE.MeshPhongMaterial();
+      material = new THREE.MeshStandardMaterial({
+        envMap: scene.environment,
+        metalness: 1, // between 0 and 1
+        roughness: 0.5, // between 0 and 1
+      });
       rollerCoaster.lifters = new THREE.Mesh(geometry, material);
       rollerCoaster.lifters.position.y = 0.1;
       scene.add(rollerCoaster.lifters);
 
       geometry = new RollerCoasterShadowGeometry(curve, 500);
       material = new THREE.MeshBasicMaterial({
-        color: '#050A30',
+        color: "#050A30",
         depthWrite: false,
         transparent: true,
       });
       rollerCoaster.shadow = new THREE.Mesh(geometry, material);
       rollerCoaster.shadow.position.y = 0.1;
-      scene.add(rollerCoaster.shadow);
+      // scene.add(rollerCoaster.shadow);
 
       const funfairs = [];
 
