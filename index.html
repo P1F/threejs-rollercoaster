@@ -18,7 +18,7 @@
       <source src="./media/rollerCoasterOfLove.mp3" type="audio/mpeg" />
     </audio>
     <script type="module">
-      import * as THREE from "./build/three.module.js";
+      import * as THREE from "https://cdn.skypack.dev/three";
       import { Water } from "https://threejs.org/examples/jsm/objects/Water.js";
       import { Sky } from "https://threejs.org/examples/jsm/objects/Sky.js";
 
@@ -30,9 +30,9 @@
         SkyGeometry,
       } from "./script.js";
 
-      import { OrbitControls } from "./js/OrbitControls.js";
-      import { EditorControls } from "./js/EditorControls.js";
-      import { TransformControls } from "./js/TransformControls.js";
+      import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+      import { TransformControls } from "https://threejs.org/examples/jsm/controls/TransformControls.js";
+      import { EditorControls } from "https://threejs.org/editor/js/EditorControls.js";
 
       let mesh, material, geometry;
 
