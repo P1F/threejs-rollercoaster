@@ -1,411 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js vr - roller coaster</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <head>
+    <title>three.js vr - roller coaster</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
   </head>
-	<body>
-		<script type="module">
+  <body>
+    <script type="module">
+      import * as THREE from "./build/three.module.js";
+
+      import {
+        RollerCoasterGeometry,
+        RollerCoasterShadowGeometry,
+        RollerCoasterLiftersGeometry,
+        TreesGeometry,
+        SkyGeometry,
+      } from "./script.js";
 
-      import * as THREE from './build/three.module.js';
+      import { OrbitControls } from "./js/OrbitControls.js";
+      import { EditorControls } from "./js/EditorControls.js";
+      import { TransformControls } from "./js/TransformControls.js";
 
-			import {
-				RollerCoasterGeometry,
-				RollerCoasterShadowGeometry,
-				RollerCoasterLiftersGeometry,
-				TreesGeometry,
-				SkyGeometry
-			} from './script.js';
-
-			import { OrbitControls } from './js/OrbitControls.js'
-			import { EditorControls } from './js/EditorControls.js'
-			import { TransformControls } from './js/TransformControls.js'
-
-			let mesh, material, geometry;
-
-			const renderer = new THREE.WebGLRenderer( { antialias: true } );
-			renderer.setPixelRatio( window.devicePixelRatio );
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.body.appendChild( renderer.domElement );
-			//
-
-			const scene = new THREE.Scene();
-			scene.background = new THREE.Color( 0xf0f0ff );
-
-			const light = new THREE.HemisphereLight( 0xfff0f0, 0x606066 );
-			light.position.set( 1, 1, 1 );
-			scene.add( light );
-
-			const train = new THREE.Object3D();
-			scene.add( train );
-
-			geometry = new THREE.SphereGeometry( 0.5, 32, 16 );
-			material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-			
-			const sphere = new THREE.Mesh( geometry, material );
-			train.add( sphere );
-
-			geometry = new THREE.BoxBufferGeometry( 0.5, 300, 300 );
-			material = new THREE.MeshBasicMaterial( { color: 0x00f6ff, alphaTest: 0, visible: false } );
-			const plane = new THREE.Mesh( geometry, material );
-			plane.position.set(0, 20, 0);
-			plane.rotateZ( - Math.PI / 2 );
-			plane.userData.ground = true;
-			scene.add(plane);
-
-			const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 500 );
-			camera.position.set(0, 130, 0);
-			
-			//train.add( camera );
-
-			const controls = new OrbitControls(camera, renderer.domElement);
-
-			// environment
-
-			geometry = new THREE.PlaneGeometry( 500, 500, 15, 15 );
-			geometry.rotateX( - Math.PI / 2 );
-
-			const positions = geometry.attributes.position.array;
-			const vertex = new THREE.Vector3();
-
-			for ( let i = 0; i < positions.length; i += 3 ) {
-
-				vertex.fromArray( positions, i );
-
-				vertex.x += Math.random() * 10 - 5;
-				vertex.z += Math.random() * 10 - 5;
-
-				const distance = ( vertex.distanceTo( scene.position ) / 5 ) - 25;
-				vertex.y = Math.random() * Math.max( 0, distance );
-
-				vertex.toArray( positions, i );
-
-			}
-
-			geometry.computeVertexNormals();
-
-			material = new THREE.MeshLambertMaterial( {
-				color: 0x407000
-			} );
-
-			mesh = new THREE.Mesh( geometry, material );
-			scene.add( mesh );
-
-			geometry = new TreesGeometry( mesh );
-			material = new THREE.MeshBasicMaterial( {
-				side: THREE.DoubleSide, vertexColors: true
-			} );
-			mesh = new THREE.Mesh( geometry, material );
-			scene.add( mesh );
-
-			geometry = new SkyGeometry();
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-			mesh = new THREE.Mesh( geometry, material );
-			scene.add( mesh );
-
-			//
-
-			const PI2 = Math.PI * 2;
-
-			function randomInt(min, max) { // min and max included 
- 				return Math.floor(Math.random() * (max - min + 1) + min)
-			}
-
-			// let ini = new THREE.Vector3( 0, 0, 0 );
-			// let end = new THREE.Vector3( 10, 0, 0 );
-			// let points = [];
-			// for ( let i = 1; i <= 10; i ++ ) {
-			// 	const randOffset = {
-			// 		x: randomInt(-20, +20), 
-			// 		y: randomInt(-20,20),
-			// 		z: randomInt(-20,20),
-			// 	};
-
-			// 	const bezierCurve = new THREE.CubicBezierCurve3(
-			// 		ini,
-			// 		new THREE.Vector3( ini.x + randOffset.x, ini.y + randOffset.y, ini.z + randOffset.z ),
-			// 		new THREE.Vector3( end.x + randOffset.x, end.y + randOffset.y, end.z + randOffset.z ),
-			// 		end
-			// 	);
-
-			// 	const newPoints = bezierCurve.getPoints( 10000 );
-			// 	points = points.concat(newPoints);
-
-			// 	const newEnd = {
-			// 		x: end.x + randomInt(-50, +50), 
-			// 		y: end.y + randomInt(-50,50),
-			// 		z: end.z + randomInt(-50,50),
-			// 	};
-
-			// 	ini = end;
-			// 	end = new THREE.Vector3( newEnd.x, newEnd.y, newEnd.z );
-			// }
-		
-			geometry = new THREE.SphereGeometry( 0.5, 32, 16 );
-			
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-			const p1 = new THREE.Mesh( geometry, material );
-			p1.position.set(20, 20, -30);
-			p1.userData.draggable = true;
-
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-			const p2 = new THREE.Mesh( geometry, material );
-			p2.position.set(-10, 20, 40);
-			p2.userData.draggable = true;
-			p2.color = 0x9d10bd;
-
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-			const p3 = new THREE.Mesh( geometry, material );
-			p3.position.set(-50, 20, 20);
-			p3.userData.draggable = true;
-			p3.color = 0x36ea4c;
-
-			material = new THREE.MeshBasicMaterial( { color: 0xffffff } );
-			const p4 = new THREE.Mesh( geometry, material );
-			p4.position.set(0, 20, 20);
-			p4.userData.draggable = true;
-			scene.add( p1 );
-			scene.add( p2 );
-			scene.add( p3 );
-			scene.add( p4 );
-
-			const updateCurve = () => {
-				const curve = new THREE.CubicBezierCurve3(
-					new THREE.Vector3( p1.position.x, p1.position.y, p1.position.z),
-					new THREE.Vector3( p2.position.x, p2.position.y, p2.position.z ),
-					new THREE.Vector3( p3.position.x, p3.position.y, p3.position.z ),
-					new THREE.Vector3( p4.position.x, p4.position.y, p4.position.z )
-				);
-
-				return curve;
-			}
-
-
-			let bezierCurve = updateCurve();
-			let points = bezierCurve.getPoints(1000000);
-
-			const curve = ( function () {
-
-				const vector = new THREE.Vector3();
-				const vector2 = new THREE.Vector3();
-
-				return {
-
-					getPointAt: function ( t ) {
-						let i = t === 0 ? 0 : Math.floor(t * points.length) - 1;
-						i = i === -1 ? 0 : i;
-						const x = points[i].x
-						const y = points[i].y;
-						const z = points[i].z;
-
-						return vector.set( x, y, z ).multiplyScalar( 1 );
-
-					},
-
-					getTangentAt: function ( t ) {
-
-						const delta = 0.0001;
-						const t1 = Math.max( 0, t - delta );
-						const t2 = Math.min( 1, t + delta );
-
-						return vector2.copy( this.getPointAt( t2 ) )
-							.sub( this.getPointAt( t1 ) ).normalize();
-
-					}
-
-				};
-
-			} )();
-
-			const rollerCoaster = {};
-
-			geometry = new RollerCoasterGeometry( curve, 1500 );
-			material = new THREE.MeshPhongMaterial( {
-				vertexColors: true
-			} );
-			rollerCoaster.geometry = new THREE.Mesh( geometry, material );
-			scene.add( rollerCoaster.geometry );
-
-			geometry = new RollerCoasterLiftersGeometry( curve, 100 );
-			material = new THREE.MeshPhongMaterial();
-			rollerCoaster.lifters = new THREE.Mesh( geometry, material );
-			rollerCoaster.lifters.position.y = 0.1;
-			scene.add( rollerCoaster.lifters );
-
-			geometry = new RollerCoasterShadowGeometry( curve, 500 );
-			material = new THREE.MeshBasicMaterial( {
-				color: 0x305000, depthWrite: false, transparent: true
-			} );
-			rollerCoaster.shadow = new THREE.Mesh( geometry, material );
-			rollerCoaster.shadow.position.y = 0.1;
-			scene.add( rollerCoaster.shadow );
-
-			const funfairs = [];
-
-			//
-
-			geometry = new THREE.CylinderGeometry( 10, 10, 5, 15 );
-			material = new THREE.MeshLambertMaterial( {
-				color: 0xff8080
-			} );
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.position.set( - 80, 10, - 70 );
-			mesh.rotation.x = Math.PI / 2;
-			scene.add( mesh );
-
-			funfairs.push( mesh );
-
-			geometry = new THREE.CylinderGeometry( 5, 6, 4, 10 );
-			material = new THREE.MeshLambertMaterial( {
-				color: 0x8080ff
-			} );
-			mesh = new THREE.Mesh( geometry, material );
-			mesh.position.set( 50, 2, 30 );
-			scene.add( mesh );
-
-			funfairs.push( mesh );
-
-			// ----------------------- DRAG'N DROP -----------------------
-
-			const raycaster = new THREE.Raycaster();
-			const clickMouse = new THREE.Vector2();
-			const moveMouse = new THREE.Vector2();
-			let draggable;
-
-			window.addEventListener( 'click', event => {
-				if (draggable) {
-					bezierCurve = updateCurve();
-					points = bezierCurve.getPoints(1000000);
-					updateRollerCoaster();		
-					draggable.material.color.setHex(0xffffff);
-					console.log(`dropping draggable ${draggable.uuid}`);
-					draggable = null;
-					return;
-				}
-				// calculate mouse position in normalized device coordinates
-				// (-1 to +1) for both components
-				clickMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				clickMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-				
-				// update the picking ray with the camera and mouse position
-				raycaster.setFromCamera( clickMouse, camera );
-				const intersects = raycaster.intersectObjects( scene.children );
-				if (intersects.length > 0 && intersects[0].object.userData.draggable) {
-					draggable = intersects[0].object;
-					draggable.material.color.setHex(0x9988dd);
-					console.log(`found draggable ${draggable.uuid}`);
-				}
-
-			});
-
-			window.addEventListener( 'mousemove', event => {
-				moveMouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				moveMouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-			})
-
-			function dragObject() {
-				if (draggable) {
-					raycaster.setFromCamera( moveMouse, camera );
-					const intersects = raycaster.intersectObjects( scene.children );
-					if (intersects.length > 0) {
-						for (let e of intersects) {
-							if (!e.object.userData.ground) continue;
-							console.log('e.point :>> ', e.point);
-							draggable.position.x = e.point.x;
-							draggable.position.z = e.point.z;
-							bezierCurve = updateCurve();
-							points = bezierCurve.getPoints(500);
-							updateRollerCoaster();
-						}
-					}
-				}
-			}
-
-			const updateRollerCoaster = () => {
-				geometry = new RollerCoasterGeometry( curve, 1500 );
-				rollerCoaster.geometry.geometry = geometry;
-
-				geometry = new RollerCoasterLiftersGeometry( curve, 100 );
-				rollerCoaster.lifters.geometry = geometry;
-
-				geometry = new RollerCoasterShadowGeometry( curve, 500 );
-				rollerCoaster.shadow.geometry = geometry;
-			};
-
-			window.addEventListener( 'resize', onWindowResize );
-
-			function onWindowResize() {
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			// -----------------------------------------------------------
-
-			const position = new THREE.Vector3();
-			const tangent = new THREE.Vector3();
-
-			const lookAt = new THREE.Vector3();
-
-			let velocity = 0;
-			let progress = 0;
-
-			let prevTime = performance.now();
-
-			let timerId = -1;
-			function render() {
-				// if (timerId === -1) {
+      let mesh, material, geometry;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+      //
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xf0f0ff);
+
+      const light = new THREE.HemisphereLight(0xfff0f0, 0x606066);
+      light.position.set(1, 1, 1);
+      scene.add(light);
+
+      const train = new THREE.Object3D();
+      scene.add(train);
+
+      geometry = new THREE.SphereGeometry(0.5, 32, 16);
+      material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+
+      const sphere = new THREE.Mesh(geometry, material);
+      train.add(sphere);
+
+      geometry = new THREE.BoxBufferGeometry(0.5, 300, 300);
+      material = new THREE.MeshBasicMaterial({
+        color: 0x00f6ff,
+        alphaTest: 0,
+        visible: false,
+      });
+      const plane = new THREE.Mesh(geometry, material);
+      plane.position.set(0, 20, 0);
+      plane.rotateZ(-Math.PI / 2);
+      plane.userData.ground = true;
+      scene.add(plane);
+
+      const camera = new THREE.PerspectiveCamera(
+        50,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        500
+      );
+      camera.position.set(0, 130, 0);
+
+      // train.add( camera );
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+
+      // environment
+
+      geometry = new THREE.PlaneGeometry(500, 500, 15, 15);
+      geometry.rotateX(-Math.PI / 2);
+
+      const positions = geometry.attributes.position.array;
+      const vertex = new THREE.Vector3();
+
+      for (let i = 0; i < positions.length; i += 3) {
+        vertex.fromArray(positions, i);
+
+        vertex.x += Math.random() * 10 - 5;
+        vertex.z += Math.random() * 10 - 5;
+
+        const distance = vertex.distanceTo(scene.position) / 5 - 25;
+        vertex.y = Math.random() * Math.max(0, distance);
+
+        vertex.toArray(positions, i);
+      }
+
+      geometry.computeVertexNormals();
+
+      material = new THREE.MeshLambertMaterial({
+        color: 0x407000,
+      });
+
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      geometry = new TreesGeometry(mesh);
+      material = new THREE.MeshBasicMaterial({
+        side: THREE.DoubleSide,
+        vertexColors: true,
+      });
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      geometry = new SkyGeometry();
+      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      //
+
+      const PI2 = Math.PI * 2;
+
+      function randomInt(min, max) {
+        // min and max included
+        return Math.floor(Math.random() * (max - min + 1) + min);
+      }
+
+      // let ini = new THREE.Vector3( 0, 0, 0 );
+      // let end = new THREE.Vector3( 10, 0, 0 );
+      // let points = [];
+      // for ( let i = 1; i <= 10; i ++ ) {
+      // 	const randOffset = {
+      // 		x: randomInt(-20, +20),
+      // 		y: randomInt(-20,20),
+      // 		z: randomInt(-20,20),
+      // 	};
+
+      // 	const bezierCurve = new THREE.CubicBezierCurve3(
+      // 		ini,
+      // 		new THREE.Vector3( ini.x + randOffset.x, ini.y + randOffset.y, ini.z + randOffset.z ),
+      // 		new THREE.Vector3( end.x + randOffset.x, end.y + randOffset.y, end.z + randOffset.z ),
+      // 		end
+      // 	);
+
+      // 	const newPoints = bezierCurve.getPoints( 10000 );
+      // 	points = points.concat(newPoints);
+
+      // 	const newEnd = {
+      // 		x: end.x + randomInt(-50, +50),
+      // 		y: end.y + randomInt(-50,50),
+      // 		z: end.z + randomInt(-50,50),
+      // 	};
+
+      // 	ini = end;
+      // 	end = new THREE.Vector3( newEnd.x, newEnd.y, newEnd.z );
+      // }
+
+      geometry = new THREE.SphereGeometry(0.5, 32, 16);
+
+      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const p1 = new THREE.Mesh(geometry, material);
+      p1.position.set(20, 20, -30);
+      p1.userData.draggable = true;
+
+      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const p2 = new THREE.Mesh(geometry, material);
+      p2.position.set(-10, 20, 40);
+      p2.userData.draggable = true;
+      p2.color = 0x9d10bd;
+
+      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const p3 = new THREE.Mesh(geometry, material);
+      p3.position.set(-50, 20, 20);
+      p3.userData.draggable = true;
+      p3.color = 0x36ea4c;
+
+      material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const p4 = new THREE.Mesh(geometry, material);
+      p4.position.set(0, 20, 20);
+      p4.userData.draggable = true;
+      scene.add(p1);
+      scene.add(p2);
+      scene.add(p3);
+      scene.add(p4);
+
+      const updateCurve = () => {
+        const curve = new THREE.CubicBezierCurve3(
+          new THREE.Vector3(p1.position.x, p1.position.y, p1.position.z),
+          new THREE.Vector3(p2.position.x, p2.position.y, p2.position.z),
+          new THREE.Vector3(p3.position.x, p3.position.y, p3.position.z),
+          new THREE.Vector3(p4.position.x, p4.position.y, p4.position.z)
+        );
+
+        return curve;
+      };
+
+      let bezierCurve = updateCurve();
+      let points = bezierCurve.getPoints(1000000);
+
+      const curve = (function () {
+        const vector = new THREE.Vector3();
+        const vector2 = new THREE.Vector3();
+
+        return {
+          getPointAt: function (t) {
+            let i = t === 0 ? 0 : Math.floor(t * points.length) - 1;
+            i = i === -1 ? 0 : i;
+            const x = points[i].x;
+            const y = points[i].y;
+            const z = points[i].z;
+
+            return vector.set(x, y, z).multiplyScalar(1);
+          },
+
+          getTangentAt: function (t) {
+            const delta = 0.0001;
+            const t1 = Math.max(0, t - delta);
+            const t2 = Math.min(1, t + delta);
+
+            return vector2
+              .copy(this.getPointAt(t2))
+              .sub(this.getPointAt(t1))
+              .normalize();
+          },
+        };
+      })();
+
+      const rollerCoaster = {};
+
+      geometry = new RollerCoasterGeometry(curve, 1500);
+      material = new THREE.MeshPhongMaterial({
+        vertexColors: true,
+      });
+      rollerCoaster.geometry = new THREE.Mesh(geometry, material);
+      scene.add(rollerCoaster.geometry);
+
+      geometry = new RollerCoasterLiftersGeometry(curve, 100);
+      material = new THREE.MeshPhongMaterial();
+      rollerCoaster.lifters = new THREE.Mesh(geometry, material);
+      rollerCoaster.lifters.position.y = 0.1;
+      scene.add(rollerCoaster.lifters);
+
+      geometry = new RollerCoasterShadowGeometry(curve, 500);
+      material = new THREE.MeshBasicMaterial({
+        color: 0x305000,
+        depthWrite: false,
+        transparent: true,
+      });
+      rollerCoaster.shadow = new THREE.Mesh(geometry, material);
+      rollerCoaster.shadow.position.y = 0.1;
+      scene.add(rollerCoaster.shadow);
+
+      const funfairs = [];
+
+      //
+
+      geometry = new THREE.CylinderGeometry(10, 10, 5, 15);
+      material = new THREE.MeshLambertMaterial({
+        color: 0xff8080,
+      });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(-80, 10, -70);
+      mesh.rotation.x = Math.PI / 2;
+      scene.add(mesh);
+
+      funfairs.push(mesh);
+
+      geometry = new THREE.CylinderGeometry(5, 6, 4, 10);
+      material = new THREE.MeshLambertMaterial({
+        color: 0x8080ff,
+      });
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(50, 2, 30);
+      scene.add(mesh);
+
+      funfairs.push(mesh);
+
+      // ----------------------- DRAG'N DROP -----------------------
+
+      const raycaster = new THREE.Raycaster();
+      const clickMouse = new THREE.Vector2();
+      const moveMouse = new THREE.Vector2();
+      let draggable;
+
+      window.addEventListener("click", (event) => {
+        if (draggable) {
+          bezierCurve = updateCurve();
+          points = bezierCurve.getPoints(1000000);
+          updateRollerCoaster();
+          draggable.material.color.setHex(0xffffff);
+          console.log(`dropping draggable ${draggable.uuid}`);
+          draggable = null;
+          return;
+        }
+        // calculate mouse position in normalized device coordinates
+        // (-1 to +1) for both components
+        clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // update the picking ray with the camera and mouse position
+        raycaster.setFromCamera(clickMouse, camera);
+        const intersects = raycaster.intersectObjects(scene.children);
+        if (intersects.length > 0 && intersects[0].object.userData.draggable) {
+          draggable = intersects[0].object;
+          draggable.material.color.setHex(0x9988dd);
+          console.log(`found draggable ${draggable.uuid}`);
+        }
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        moveMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        moveMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      });
+
+      window.addEventListener("keypress", function () {
+        if (event.key == 1) {
+          camera.position.set(0, 0, 0);
+          train.add(camera);
+        } else if (event.key == 2) {
+          camera.position.set(0, 10, -2);
+          train.add(camera);
+        } else if (event.key == 3) {
+          camera.position.set(0, 130, 0);
+          train.remove(camera);
+        }
+      });
+
+      function dragObject() {
+        if (draggable) {
+          raycaster.setFromCamera(moveMouse, camera);
+          const intersects = raycaster.intersectObjects(scene.children);
+          if (intersects.length > 0) {
+            for (let e of intersects) {
+              if (!e.object.userData.ground) continue;
+              console.log("e.point :>> ", e.point);
+              draggable.position.x = e.point.x;
+              draggable.position.z = e.point.z;
+              bezierCurve = updateCurve();
+              points = bezierCurve.getPoints(500);
+              updateRollerCoaster();
+            }
+          }
+        }
+      }
+
+      const updateRollerCoaster = () => {
+        geometry = new RollerCoasterGeometry(curve, 1500);
+        rollerCoaster.geometry.geometry = geometry;
+
+        geometry = new RollerCoasterLiftersGeometry(curve, 100);
+        rollerCoaster.lifters.geometry = geometry;
+
+        geometry = new RollerCoasterShadowGeometry(curve, 500);
+        rollerCoaster.shadow.geometry = geometry;
+      };
+
+      window.addEventListener("resize", onWindowResize);
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      // -----------------------------------------------------------
+
+      const position = new THREE.Vector3();
+      const tangent = new THREE.Vector3();
+
+      const lookAt = new THREE.Vector3();
+
+      let velocity = 0;
+      let progress = 0;
+
+      let prevTime = performance.now();
+
+      let timerId = -1;
+      function render() {
+        // if (timerId === -1) {
         //   timerId = setInterval(() => {
         //     // repeat something
         //     clearInterval(timerId);
         //     timerId = -1;
         //   }, 1*1000);
         // }
-				dragObject();
-				const time = performance.now();
-				const delta = time - prevTime;
-				
-				// const cameraDirection = new THREE.Vector3();
-				// camera.getWorldDirection(cameraDirection);
-				
-				for ( let i = 0; i < funfairs.length; i ++ ) {
+        dragObject();
+        const time = performance.now();
+        const delta = time - prevTime;
 
-					funfairs[ i ].rotation.y = time * 0.0004;
+        // const cameraDirection = new THREE.Vector3();
+        // camera.getWorldDirection(cameraDirection);
 
-				}
+        for (let i = 0; i < funfairs.length; i++) {
+          funfairs[i].rotation.y = time * 0.0004;
+        }
 
-				//
+        //
 
-				progress += velocity;
-				progress = progress % 1;
+        progress += velocity;
+        progress = progress % 1;
 
-				position.copy( curve.getPointAt( progress ) );
-				position.y += 0.3;
+        position.copy(curve.getPointAt(progress));
+        position.y += 0.3;
 
-				train.position.copy( position );
+        train.position.copy(position);
 
-				tangent.copy( curve.getTangentAt( progress ) );
+        tangent.copy(curve.getTangentAt(progress));
 
-				velocity -= tangent.y * 0.0000001 * delta;
-				velocity = Math.max( 0.00004, Math.min( 0.0002, velocity ) );
+        velocity -= tangent.y * 0.0000001 * delta;
+        velocity = Math.max(0.00004, Math.min(0.0002, velocity));
 
-				train.lookAt( lookAt.copy( position ).sub( tangent ) );
+        train.lookAt(lookAt.copy(position).sub(tangent));
 
-				//
+        //
 
-				renderer.render( scene, camera );
+        renderer.render(scene, camera);
 
-				prevTime = time;
+        prevTime = time;
+      }
 
-			}
-
-			renderer.setAnimationLoop( render );
-
-		</script>
-
-	</body>
+      renderer.setAnimationLoop(render);
+    </script>
+  </body>
 </html>
