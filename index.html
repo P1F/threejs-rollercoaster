@@ -210,7 +210,7 @@
         };
       })();
 
-      geometry = new RollerCoasterGeometry(curve, 1500);
+      geometry = new RollerCoasterGeometry(curve, 200);
       material = new THREE.MeshStandardMaterial({
         envMap: scene.environment,
         metalness: 1, // between 0 and 1
@@ -221,7 +221,7 @@
       mesh.receiveShadow = true;
       scene.add(mesh);
 
-      geometry = new RollerCoasterLiftersGeometry(curve, 100);
+      geometry = new RollerCoasterLiftersGeometry(curve, 30);
       material = new THREE.MeshStandardMaterial({
         envMap: scene.environment,
         metalness: 1, // between 0 and 1
